@@ -1,0 +1,19 @@
+{
+    "servers": {
+        "git": {
+            "command": "uvx",
+            "args": [
+                "mcp-server-git",
+                "--repository",
+                "/home/prabeer/DevelopmentNov/paymentgateway/MerchantUi/merchantportal"
+            ]
+        },
+        "memory": {
+            "command": "npx",
+            "args": [
+                "-y",
+                "@modelcontextprotocol/server-memory"
+            ]
+        }
+    }
+}
