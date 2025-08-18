@@ -95,7 +95,7 @@ const DataTable: React.FC<DataTableProps> = ({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   // For column customization.
   const [customColumns, setCustomColumns] = useState<Column[]>(columns);
-  const [showColumnCustomization, setShowColumnCustomization] = useState<boolean>(false);
+  // ...existing code...
   // Modal state.
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [modalData, setModalData] = useState<Record<string, unknown> | null>(null);

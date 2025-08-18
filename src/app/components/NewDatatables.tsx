@@ -49,7 +49,7 @@ export interface DataTableProps {
   enableExport?: boolean;
   infiniteScroll?: boolean;
   searchMode?: SearchMode;
-  modalRenderer?: (row: Record<string, unknown>) => React.ReactNode;
+  // ...existing code...
   actions?: Array<{ label: string; onClick: (row: Record<string, unknown>, idx: number) => void }>;
   slidingRows?: boolean;
   expandedRow?: number | null;
@@ -69,38 +69,38 @@ const Datatables: React.FC<DataTableProps> = ({
   enableGlobalSearch = true,
   enableExport = false,
   actions = [],
-  modalRenderer,
+  // ...existing code...
 }) => {
   // Convert legacy columns to new format
   const convertedColumns: TableColumn[] = useMemo(() => {
     return columns
       .filter(col => col.visible !== false)
-      .map((col, index) => ({
+  .map((col) => ({
         key: col.accessor,
         title: col.Header,
         dataIndex: col.accessor,
         sortable: col.sortable !== false,
         ellipsis: true,
         render: col.renderCell
-          ? (value: any, record: any, index: number) => col.renderCell!(value, record)
+          ? (value: unknown, record: Record<string, unknown>) => col.renderCell!(value, record)
           : col.cellAction?.type === 'link'
-          ? (value: any, record: any) => (
+          ? (value: unknown, record: Record<string, unknown>) => (
               <a
                 href={col.cellAction!.url!(record)}
                 className="text-blue-600 hover:text-blue-800 underline"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                {value}
+                {value as React.ReactNode}
               </a>
             )
           : col.cellAction?.type === 'modal'
-          ? (value: any, record: any) => (
+          ? (value: unknown, record: Record<string, unknown>) => (
               <button
                 onClick={() => col.cellAction!.onClick!(record)}
                 className="text-blue-600 hover:text-blue-800 underline bg-none border-none cursor-pointer"
               >
-                {value}
+                {value as React.ReactNode}
               </button>
             )
           : undefined,
@@ -109,16 +109,16 @@ const Datatables: React.FC<DataTableProps> = ({
 
   // Convert legacy actions to new format
   const convertedActions: TableAction[] = useMemo(() => {
-    return actions.map((action, index) => ({
+  return actions.map((action) => ({
       label: action.label,
-      onClick: (record: any) => action.onClick(record, 0),
+      onClick: (record: Record<string, unknown>) => action.onClick(record, 0),
       type: 'primary' as const,
     }));
   }, [actions]);
 
   // Simple pagination state (for demo purposes - in real app this should come from parent)
   const [currentPage, setCurrentPage] = React.useState(1);
-  const totalPages = Math.ceil(data.length / pageSize);
+  // ...existing code...
 
   const paginatedData = useMemo(() => {
     const startIndex = (currentPage - 1) * pageSize;

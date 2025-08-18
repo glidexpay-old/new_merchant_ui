@@ -251,13 +251,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
               href={logoHref} 
               className={`flex items-center ${isCollapsed ? 'justify-center w-full' : ''}`}
             >
-              {isCollapsed ? (
-                React.isValidElement(logo)
-                  ? React.cloneElement(logo as React.ReactElement<{ className?: string }>, { className: 'h-8 w-auto' })
-                  : logo
-              ) : (
-                logo
-              )}
+              {isCollapsed
+                ? React.cloneElement(
+                    logo as React.ReactElement<Record<string, unknown>>,
+                    {
+                      className: `${(logo as React.ReactElement<Record<string, unknown>>).props.className || 'h-8 w-auto'}`
+                    }
+                  )
+                : logo}
             </Link>
           )}
 

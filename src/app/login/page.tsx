@@ -33,8 +33,8 @@ export default function LoginPage() {
   }, []);
 
   const dispatch = useAppDispatch();
-  const handleSubmit = async (e: React.FormEvent) => {
-  // e.preventDefault();
+  const handleSubmit = async () => {
+  // (parameter 'e' removed as it is unused)
     setLoading(true);
     setError("");
 
@@ -208,7 +208,13 @@ export default function LoginPage() {
           <p className="text-gray-500 text-sm mt-2">Sign in to access your dashboard</p>
         </div>
         
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form
+          onSubmit={e => {
+            e.preventDefault();
+            handleSubmit();
+          }}
+          className="space-y-5"
+        >
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">

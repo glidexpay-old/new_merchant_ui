@@ -12,7 +12,7 @@ export interface TableColumn {
   sortable?: boolean;
   filterable?: boolean;
   ellipsis?: boolean;
-  textColor?: (record: any) => string;
+  textColor?: (record: Record<string, unknown>) => string;
 }
 
 export interface TableAction {
@@ -20,12 +20,12 @@ export interface TableAction {
   onClick: (record: Record<string, unknown>) => void;
   type?: 'primary' | 'secondary' | 'danger';
   icon?: React.ReactNode;
-  disabled?: (record: any) => boolean;
+  disabled?: (record: Record<string, unknown>) => boolean;
 }
 
 export interface DataTableProps {
   columns: TableColumn[];
-  dataSource: Array<Record<string, unknown>>;
+  dataSource: Record<string, unknown>[];
   loading?: boolean;
   pagination?: {
     current: number;
@@ -38,12 +38,12 @@ export interface DataTableProps {
   rowSelection?: {
     type: 'checkbox' | 'radio';
     selectedRowKeys?: React.Key[];
-    onChange?: (selectedRowKeys: React.Key[], selectedRows: any[]) => void;
+  onChange?: (selectedRowKeys: React.Key[], selectedRows: Record<string, unknown>[]) => void;
   };
   actions?: TableAction[];
   searchable?: boolean;
   exportable?: boolean;
-  onExport?: (data: any[]) => void;
+  onExport?: (data: Record<string, unknown>[]) => void;
   className?: string;
   size?: 'small' | 'middle' | 'large';
   emptyText?: string;
@@ -72,7 +72,7 @@ export const DataTable: React.FC<DataTableProps> = ({
     if (!searchTerm) return dataSource;
     return dataSource.filter((item) =>
       Object.values(item).some((value) =>
-        String(value ?? '').toLowerCase().includes(searchTerm.toLowerCase())
+        String(value).toLowerCase().includes(searchTerm.toLowerCase())
       )
     );
   }, [dataSource, searchTerm]);
@@ -84,21 +84,13 @@ export const DataTable: React.FC<DataTableProps> = ({
     return [...filteredData].sort((a, b) => {
       const aValue = a[sortConfig.key];
       const bValue = b[sortConfig.key];
-      // Type guards for sorting
-      if (typeof aValue === 'number' && typeof bValue === 'number') {
-        return sortConfig.direction === 'asc' ? aValue - bValue : bValue - aValue;
+      // Type guard for string/number comparison
+      if ((typeof aValue === 'string' || typeof aValue === 'number') && (typeof bValue === 'string' || typeof bValue === 'number')) {
+        if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
+        if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
+        return 0;
       }
-      if (typeof aValue === 'string' && typeof bValue === 'string') {
-        return sortConfig.direction === 'asc'
-          ? aValue.localeCompare(bValue)
-          : bValue.localeCompare(aValue);
-      }
-      // Fallback: compare as strings
-      const strA = String(aValue ?? '');
-      const strB = String(bValue ?? '');
-      return sortConfig.direction === 'asc'
-        ? strA.localeCompare(strB)
-        : strB.localeCompare(strA);
+      return 0;
     });
   }, [filteredData, sortConfig]);
 
@@ -271,7 +263,9 @@ export const DataTable: React.FC<DataTableProps> = ({
                   <div className={`text-sm ${column.textColor?.(record) || 'text-gray-900'}`}>
                     {column.render
                       ? column.render(record[column.dataIndex], record, index)
-                      : String(record[column.dataIndex] ?? '')}
+                      : (typeof record[column.dataIndex] === 'string' || typeof record[column.dataIndex] === 'number' || React.isValidElement(record[column.dataIndex])
+                        ? record[column.dataIndex] as React.ReactNode
+                        : null)}
                   </div>
                 </td>
               ))}

@@ -334,9 +334,12 @@ export const Navbar: React.FC<NavbarProps> = ({
               {/* Logo */}
               {logo && (
                 <Link href={logoHref} className="flex items-center">
-                  {React.cloneElement(logo as React.ReactElement<any>, {
-                    className: `${(logo as React.ReactElement<any>).props.className || ''} h-8 w-auto`
-                  })}
+                  {React.cloneElement(
+                    logo as React.ReactElement<Record<string, unknown>>,
+                    {
+                      className: `${(logo as React.ReactElement<Record<string, unknown>>).props.className || ''} h-8 w-auto`
+                    }
+                  )}
                 </Link>
               )}
 
