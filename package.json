@@ -3,11 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-  "dev": "next dev",
-  "build": "next build",
-  "export": "next export",
-  "start": "next start",
-  "lint": "next lint"
+    "dev": "next dev",
+    "build": "next build",
+    "build:static": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "deploy": "npm run build:static && npm run upload:s3",
+    "upload:s3": "aws s3 sync out/ s3://dashboard.glidexpay.com --delete --cache-control max-age=31536000,public",
+    "deploy:prod": "npm run build:static && npm run upload:s3 && npm run invalidate:cloudfront",
+    "invalidate:cloudfront": "aws cloudfront create-invalidation --distribution-id YOUR_DISTRIBUTION_ID --paths '/*'"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
