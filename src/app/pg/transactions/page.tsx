@@ -17,6 +17,17 @@ interface Filters {
   pageRecords: number;
 }
 
+interface TransactionExport {
+  merchantId?: string;
+  merchantOrderId?: string;
+  transactionTime?: string;
+  amount?: number;
+  orderID?: string;
+  status?: string;
+  lastupdate?: string;
+  [key: string]: unknown; // Allow other properties
+}
+
 const TransactionsPage = () => {
   const dispatch = useAppDispatch();
   const { transactions, loading } = useAppSelector((state) => state.pgTrxn);
@@ -69,15 +80,17 @@ const TransactionsPage = () => {
 
   
 
-  // Transform data for export - remove merchantName and divide amount by 100
+  // Transform data for export - ensure lastupdate is always included
   const exportData = transactions.map((trx) => {
-    const filtered = { ...trx };
-    if ('merchantName' in filtered) {
-      delete filtered['merchantName'];
-    }
+    const transaction = trx as unknown as TransactionExport;
     return {
-      ...filtered,
-      amount: Number(trx.amount || 0) / 100 // Divide amount by 100, handle null/undefined
+      merchantId: transaction.merchantId,
+      merchantOrderId: transaction.merchantOrderId,
+      transactionTime: transaction.transactionTime,
+      amount: Number(transaction.amount || 0) / 100,
+      orderID: transaction.orderID,
+      status: transaction.status,
+      lastupdate: transaction.lastupdate || '' // Include lastupdate, use empty string if not present
     };
   }) as Record<string, unknown>[];
 
