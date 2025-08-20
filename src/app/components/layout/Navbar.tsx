@@ -280,27 +280,19 @@ export const Navbar: React.FC<NavbarProps> = ({
   rightItems,
   userMenu,
   notifications,
-  searchable = false,
-  onSearch,
-  searchPlaceholder = 'Search...',
   className = '',
   theme = 'light',
   sticky = true,
   bordered = true,
   height = 64,
 }) => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
   const themeClasses = theme === 'dark'
     ? 'bg-gray-900 text-white border-gray-800'
     : 'bg-white text-gray-900 border-gray-100';
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSearch?.(searchQuery);
-  };
+  // handleSearch and search expansion logic are commented out in the UI, so can be removed if not used elsewhere.
+  // ...existing code...
 
   return (
     <>

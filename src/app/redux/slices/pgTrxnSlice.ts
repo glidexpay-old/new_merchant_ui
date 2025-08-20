@@ -6,7 +6,7 @@ import getUserData from '@/app/utils/getUserData';
 import { showToast } from '@/app/redux/toastSlice';
 
 // Define types
-interface Transaction {
+export interface Transaction {
   id: string;
   amount: number;
   date: string;

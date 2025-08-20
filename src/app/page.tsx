@@ -45,7 +45,7 @@ export default function Home() {
   const mainStatsCards = balance ? [
     {
       title: "Today's Transactions",
-      value: `₹${balance.todaysTransactions?.toLocaleString() || '0'}`,
+      value: `₹${Math.floor(Number(balance.todaysTransactions || 0)).toLocaleString()}`,
       subtitle: "+12% from yesterday",
       icon: <CardIcons.Money />,
       iconBgColor: "bg-blue-50",
@@ -63,7 +63,7 @@ export default function Home() {
     // },
     {
       title: "Total Payin Amount",
-      value: `₹${balance.unsettledAmount?.toLocaleString() || '0'}`,
+      value: `₹${Math.floor(Number(balance.unsettledAmount || 0)).toLocaleString()}`,
       subtitle: "Pending settlement",
       icon: <CardIcons.Clock />,
       iconBgColor: "bg-amber-50",

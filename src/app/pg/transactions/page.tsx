@@ -69,13 +69,23 @@ const TransactionsPage = () => {
 
   
 
-  
+  // Transform data for export - remove merchantName and divide amount by 100
+  const exportData = transactions.map((trx) => {
+    const filtered = { ...trx };
+    if ('merchantName' in filtered) {
+      delete filtered['merchantName'];
+    }
+    return {
+      ...filtered,
+      amount: Number(trx.amount || 0) / 100 // Divide amount by 100, handle null/undefined
+    };
+  }) as Record<string, unknown>[];
 
   return (
     <div className="main-container container mx-auto py-8 px-4">
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
         <h1 className='h1-text'>Transactions</h1>
-        <ExportDropdown data={transactions.map(trx => ({ ...trx }) as Record<string, unknown>)} filenamePrefix="transactions" />
+        <ExportDropdown data={exportData} filenamePrefix="transactions" />
       </div>
 
       {/* Filters UI */}
