@@ -52,15 +52,15 @@ export default function Home() {
       iconColor: "text-blue-600",
       onClick: () => router.push("/pg/transactions")
     },
-    {
-      title: "Last Settlement",
-      value: `₹${balance.lastSettlements?.toLocaleString() || '0'}`,
-      subtitle: "From last cycle",
-      icon: <CardIcons.CheckCircle />,
-      iconBgColor: "bg-green-50",
-      iconColor: "text-green-600",
-      onClick: () => router.push("/pg/settlements")
-    },
+    // {
+    //   title: "Last Settlement",
+    //   value: `₹${balance.lastSettlements?.toLocaleString() || '0'}`,
+    //   subtitle: "From last cycle",
+    //   icon: <CardIcons.CheckCircle />,
+    //   iconBgColor: "bg-green-50",
+    //   iconColor: "text-green-600",
+    //   onClick: () => router.push("/pg/settlements")
+    // },
     {
       title: "Total Payin Amount",
       value: `₹${balance.unsettledAmount?.toLocaleString() || '0'}`,
@@ -71,65 +71,6 @@ export default function Home() {
       onClick: () => router.push("/pg/settlements")
     }
   ] : [];
-
-  // Prepare transaction status cards
-  const statusCards = (dayWiseTransactionDetails?.dayWiseTransactionStatusResponseList?.length ?? 0) > 0
-    ? dayWiseTransactionDetails!.dayWiseTransactionStatusResponseList!.map((status) => {
-        const statusConfig = {
-          SUCCESS: {
-            bgColor: 'bg-emerald-50',
-            iconColor: 'text-emerald-600',
-            label: 'Success Transactions'
-          },
-          PENDING: {
-            bgColor: 'bg-amber-50',
-            iconColor: 'text-amber-600',
-            label: 'Pending Transactions'
-          },
-          FAILED: {
-            bgColor: 'bg-red-50',
-            iconColor: 'text-red-600',
-            label: 'Failed Transactions'
-          }
-        }[status.trasactionStatus];
-
-        return {
-          title: statusConfig?.label || status.trasactionStatus,
-          value: `₹${status.totalAmount.toLocaleString()}`,
-          subtitle: `${status.totalTrcount.toLocaleString()} transactions (${status.totalPercent}%)`,
-          icon: status.trasactionStatus === 'SUCCESS' ? <CardIcons.CheckCircle /> : 
-                status.trasactionStatus === 'PENDING' ? <CardIcons.Clock /> : 
-                <CardIcons.XCircle />,
-          iconBgColor: statusConfig?.bgColor || 'bg-gray-50',
-          iconColor: statusConfig?.iconColor || 'text-gray-600'
-        };
-      })
-    : [
-        {
-          title: 'Success Transactions',
-          value: '₹0',
-          subtitle: '0 transactions (0%)',
-          icon: <CardIcons.CheckCircle />,
-          iconBgColor: 'bg-emerald-50',
-          iconColor: 'text-emerald-600'
-        },
-        {
-          title: 'Pending Transactions',
-          value: '₹0',
-          subtitle: '0 transactions (0%)',
-          icon: <CardIcons.Clock />,
-          iconBgColor: 'bg-amber-50',
-          iconColor: 'text-amber-600'
-        },
-        {
-          title: 'Failed Transactions',
-          value: '₹0',
-          subtitle: '0 transactions (0%)',
-          icon: <CardIcons.XCircle />,
-          iconBgColor: 'bg-red-50',
-          iconColor: 'text-red-600'
-        }
-      ];
 
   return (
     <div className="p-4 md:p-8 space-y-8">
@@ -164,10 +105,10 @@ export default function Home() {
       {/* Transaction Status Cards */}
       <div>
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-          <div>
+          {/* <div>
             <h2 className="text-lg font-semibold text-gray-800">Transaction Status Overview</h2>
             <p className="text-sm text-gray-500">Detailed breakdown of transaction statuses</p>
-          </div>
+          </div> */}
           {dayWiseTransactionDetails?.lastSuccessTransctionTime && (
             <div className="mt-2 md:mt-0">
               <p className="text-sm text-gray-600">
@@ -176,7 +117,7 @@ export default function Home() {
             </div>
           )}
         </div>
-        <StatCards cards={statusCards} gridCols={3} />
+        {/* <StatCards cards={statusCards} gridCols={3} /> */}
         
         {dayWiseTransactionDetails?.name && (
           <div className="mt-6 pt-4 border-t border-gray-200">

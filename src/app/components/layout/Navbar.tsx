@@ -355,7 +355,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
 
             {/* Center - Search */}
-            {searchable && (
+            {/* {searchable && (
               <div className={`flex-1 max-w-lg mx-4 ${isSearchExpanded ? 'block' : 'hidden md:block'}`}>
                 <form onSubmit={handleSearch} className="relative">
                   <input
@@ -379,12 +379,12 @@ export const Navbar: React.FC<NavbarProps> = ({
                   </div>
                 </form>
               </div>
-            )}
+            )} */}
 
             {/* Right Side */}
             <div className="flex items-center space-x-2 sm:space-x-4">
               {/* Mobile Search Toggle */}
-              {searchable && (
+              {/* {searchable && (
                 <button
                   onClick={() => setIsSearchExpanded(!isSearchExpanded)}
                   className={`md:hidden p-2 rounded-full transition-colors ${
@@ -398,7 +398,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
                 </button>
-              )}
+              )} */}
 
               {/* Right Items - Desktop */}
               {rightItems && <div className="hidden md:flex items-center space-x-2">{rightItems}</div>}
@@ -438,14 +438,14 @@ export const Navbar: React.FC<NavbarProps> = ({
                           {userMenu.user.name.charAt(0).toUpperCase()}
                         </div>
                       )}
-                      <div className="hidden md:block text-left">
+                      {/* <div className="hidden md:block text-left">
                         <p className="text-sm font-medium">{userMenu.user.name}</p>
                         {userMenu.user.role && (
                           <p className={`text-xs ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
                             {userMenu.user.role}
                           </p>
                         )}
-                      </div>
+                      </div> */}
                       <svg 
                         className={`hidden md:block h-4 w-4 ${theme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`} 
                         fill="none" 
@@ -463,7 +463,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
 
           {/* Mobile Search Overlay */}
-          {searchable && isSearchExpanded && (
+          {/* {searchable && isSearchExpanded && (
             <div className={`md:hidden border-t ${theme === 'dark' ? 'border-gray-800' : 'border-gray-200'} p-4`}>
               <form onSubmit={handleSearch} className="relative">
                 <input
@@ -488,7 +488,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </div>
               </form>
             </div>
-          )}
+          )} */}
         </div>
       </nav>
 
