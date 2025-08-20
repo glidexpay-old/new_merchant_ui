@@ -64,7 +64,7 @@ export default function Home() {
     {
       title: "Total Payin Amount",
       value: `₹${Math.floor(Number(balance.unsettledAmount || 0)).toLocaleString()}`,
-      subtitle: "Pending settlement",
+      subtitle: "Pending Amount",
       icon: <CardIcons.Clock />,
       iconBgColor: "bg-amber-50",
       iconColor: "text-amber-600",
