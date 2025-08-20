@@ -85,6 +85,16 @@ const TransactionsPage = () => {
     const transaction = trx as unknown as TransactionExport;
     return {
       merchantId: transaction.merchantId,
+      paymentOption: transaction.paymentOption || '',
+      paymentMode: transaction.paymentMode || '',
+      txtMsg: transaction.txtMsg || '',
+      merchantReturnURL: transaction.merchantReturnURL || '',
+      cardNumber: transaction.cardNumber || '',
+      walletOrBankCode: transaction.walletOrBankCode || '',
+      vpaUPI: transaction.vpaUPI || '',
+      orderNote: transaction.orderNote || '',
+      merchantAlerturl: transaction.merchantAlerturl || '',
+      callBackFlag: transaction.callBackFlag || '',
       merchantOrderId: transaction.merchantOrderId,
       transactionTime: transaction.transactionTime,
       lastupdate: transaction.lastupdate || '',
