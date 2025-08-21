@@ -97,7 +97,7 @@ const TransactionsPage = () => {
       callBackFlag: transaction.callBackFlag || '',
       merchantOrderId: transaction.merchantOrderId,
       transactionTime: transaction.transactionTime,
-      lastupdate: transaction.lastupdate || '',
+      lastupdate: transaction.updated || '',
       amount: Number(transaction.amount || 0) / 100,
       orderID: transaction.orderID,
       status: transaction.status,
