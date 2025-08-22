@@ -6,7 +6,7 @@ import dynamic from "next/dynamic";
 const ForgetPassword = dynamic(() => import("./ForgetPassword"), { ssr: false });
 import { useRouter } from "next/navigation";
 import { BASE_URL } from "@/app/config";
-import { startSessionTimer } from "@/app/utils/sessionManager";
+import { authService } from "@/app/utils/sessionManager";
 import ReCAPTCHA from "react-google-recaptcha-enterprise";
 
 export default function LoginPage() {
@@ -19,8 +19,15 @@ export default function LoginPage() {
   const [showForget, setShowForget] = useState(false);
   const [captchaToken, setCaptchaToken] = useState("");
 
-  // On mount, check for remembered credentials
+  // On mount, check for remembered credentials and redirect if already authenticated
   useEffect(() => {
+    // Check if user is already authenticated
+    if (authService.isAuthenticated()) {
+      router.replace("/");
+      return;
+    }
+
+    // Check for remembered credentials
     const remembered = localStorage.getItem("rememberMeCredentials");
     if (remembered) {
       try {
@@ -30,11 +37,10 @@ export default function LoginPage() {
         setRememberMe(true);
       } catch {}
     }
-  }, []);
+  }, [router]);
 
   const dispatch = useAppDispatch();
   const handleSubmit = async () => {
-  // (parameter 'e' removed as it is unused)
     setLoading(true);
     setError("");
 
@@ -53,6 +59,7 @@ export default function LoginPage() {
       } else {
         localStorage.removeItem("rememberMeCredentials");
       }
+
       const trimmedEmail = email.trim();
       const trimmedPassword = password.trim();
       const payload = {
@@ -62,6 +69,7 @@ export default function LoginPage() {
         userNameOrEmail: trimmedEmail,
         captchaToken: captchaToken,
       };
+
       const res = await fetch(`${BASE_URL}/user/login`, {
         method: "POST",
         headers: {
@@ -69,7 +77,9 @@ export default function LoginPage() {
         },
         body: JSON.stringify(payload),
       });
+
       const data = await res.json();
+
       if (
         data.msg === "PASSWORD_VALIDATION_ERROR" ||
         data.msg?.message === "PASSWORD_VALIDATION_ERROR" ||
@@ -77,13 +87,17 @@ export default function LoginPage() {
       ) {
         try {
           const { showToast } = await import("@/app/redux/toastSlice");
-          dispatch(showToast({ message: "Password does not meet the required criteria. Please check the password requirements or reset your password.", type: "error" }));
+          dispatch(showToast({ 
+            message: "Password does not meet the required criteria. Please check the password requirements or reset your password.", 
+            type: "error" 
+          }));
         } catch {
           setError("Password does not meet the required criteria. Please check the password requirements or reset your password.");
         }
         setLoading(false);
         return;
       }
+
       if (!res.ok || !(data.status == true || data.status == "200")) {
         const errorMsg = data.msg?.message ||
           (Array.isArray(data.msg) ? data.msg[0] : data.msg) ||
@@ -97,34 +111,23 @@ export default function LoginPage() {
         setLoading(false);
         return;
       }
-      const token = data.extraData?.LoginData?.jwtToken;
-      const sessionExpiryDate = data.extraData?.LoginData?.sessionExpiryDate || data.extraData?.LoginData?.expiry;
-      if (token) {
+
+      const loginData = data.extraData?.LoginData;
+      
+      if (loginData && loginData.jwtToken) {
         try {
-          localStorage.setItem("userData", JSON.stringify({
-            token: data.extraData?.LoginData?.jwtToken,
-            uuid: data.extraData?.LoginData?.uuid,
-            merchantId: data.extraData?.LoginData?.merchantId,
-            sessionExpiryDate: sessionExpiryDate || null,
-          }));
-          if (sessionExpiryDate) {
-            startSessionTimer(sessionExpiryDate);
-          }
-          const userDataStr = localStorage.getItem("userData");
-          let storedToken = null;
-          if (userDataStr) {
-            try {
-              const userData = JSON.parse(userDataStr);
-              storedToken = userData.token;
-            } catch {
-              setError("Failed to parse userData from localStorage");
-            }
-          }
-          if (storedToken === token) {
+          // Use authService to store user data and setup session
+          authService.storeUserData(loginData);
+
+          // Verify the data was stored correctly
+          const storedUserData = authService.getUserData();
+          if (storedUserData?.token === loginData.jwtToken) {
             try {
               const { showToast } = await import("@/app/redux/toastSlice");
               dispatch(showToast({ message: "Login successful!", type: "success" }));
             } catch {}
+            
+            // Redirect to dashboard
             router.push("/");
             setLoading(false);
             return;

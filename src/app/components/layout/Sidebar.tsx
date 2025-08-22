@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 
 export interface SidebarMenuItem {
@@ -182,8 +181,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
   width = 260,
   collapsedWidth = 80,
   theme = 'light',
-  userInfo,
-  onUserMenuClick,
   breakpoint = 'lg',
 }) => {
   const [isMobile, setIsMobile] = useState(false);
@@ -302,7 +299,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
 
         {/* User Info */}
-        {userInfo && (
+        {/* {userInfo && (
           <div className={`border-t ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'} p-4`}>
             <div
               className={`flex items-center cursor-pointer transition-colors rounded-lg p-2 ${
@@ -310,7 +307,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
               }`}
               onClick={onUserMenuClick}
             >
-              {/* Avatar */}
               <div className={`flex-shrink-0 ${isCollapsed ? 'mx-auto' : 'mr-3'}`}>
                 {userInfo.avatar ? (
                   <Image
@@ -329,7 +325,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 )}
               </div>
 
-              {/* User Details */}
               {!isCollapsed && (
                 <div className="flex-1 min-w-0">
                   <p className={`text-sm font-medium truncate ${
@@ -355,7 +350,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               )}
             </div>
           </div>
-        )}
+        )} */}
 
         {/* Footer */}
         {footer && (

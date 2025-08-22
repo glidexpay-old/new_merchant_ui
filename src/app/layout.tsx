@@ -4,7 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { usePathname } from "next/navigation";
 import React, { useEffect } from "react";
-import { checkSessionExpiry } from "./utils/sessionManager";
+import { authService } from "./utils/sessionManager";
 import { DashboardLayout } from "./components/DashboardLayout";
 
 import ReduxProvider from "./redux/provider";
@@ -35,8 +35,9 @@ export default function RootLayout({
   const pathname = usePathname();
 
   useEffect(() => {
-    // Check session expiry on app load
-    checkSessionExpiry();
+    // Initialize session checking on app load
+    console.log("[RootLayout] Initializing session management...");
+    authService.initializeSession();
   }, []);
 
   const isAuthPage = pathname === "/login" || pathname === "/register";

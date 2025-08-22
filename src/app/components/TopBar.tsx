@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useAppDispatch } from "@/app/redux/hooks";
-import { logoutAdmin } from "@/app/redux/slices/adminSlice";
-import { useRouter } from "next/navigation";
+// import { logoutAdmin } from "@/app/redux/slices/adminSlice";
+// ...existing code...
 import { Moon, Sun } from "lucide-react";
 
 interface TopBarProps {
@@ -13,7 +13,6 @@ interface TopBarProps {
 
 const TopBar: React.FC<TopBarProps> = ({ toggleSidebar, userName = "Admin", isMobile }) => {
   const dispatch = useAppDispatch();
-  const router = useRouter();
   const [currentTime, setCurrentTime] = useState<string>("");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [showProfileMenu, setShowProfileMenu] = useState<boolean>(false);
@@ -182,10 +181,19 @@ const TopBar: React.FC<TopBarProps> = ({ toggleSidebar, userName = "Admin", isMo
               <button
                 className="w-full text-left px-4 py-2 hover:bg-gray-700 transition-colors duration-150 text-red-400"
                 onClick={async () => {
-                  await dispatch(logoutAdmin());
-                  const { showToast } = await import("@/app/redux/toastSlice");
-                  dispatch(showToast({ message: "Logout successful!", type: "success" }));
-                  router.push("/login");
+                  try {
+                    const { showToast } = await import("@/app/redux/toastSlice");
+                    dispatch(showToast({ message: "Logging out...", type: "success" }));
+                    
+                    // Use authService for proper logout
+                    const { authService } = await import("@/app/utils/sessionManager");
+                    authService.logout();
+                  } catch (error) {
+                    console.error('Logout failed:', error);
+                    // Force logout even if there's an error
+                    const { authService } = await import("@/app/utils/sessionManager");
+                    authService.logout();
+                  }
                 }}
               >
                 <div className="flex items-center cursor-pointer">

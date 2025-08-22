@@ -87,7 +87,7 @@ const TransactionsPage = () => {
       merchantId: transaction.merchantId,
       merchantOrderId: transaction.merchantOrderId,
       transactionTime: transaction.transactionTime,
-      lastupdate: transaction.lastupdate || '',
+      lastupdate: transaction.merchantSaltKey || '',
       amount: Number(transaction.amount || 0) / 100,
       orderID: transaction.orderID,
       status: transaction.status,

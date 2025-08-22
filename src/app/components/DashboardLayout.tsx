@@ -1,9 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/app/redux/hooks';
-import { logoutAdmin } from '@/app/redux/slices/adminSlice';
 import { Sidebar } from '@/app/components/layout/Sidebar';
 import { Navbar } from '@/app/components/layout/Navbar';
 import type { SidebarMenuItem } from '@/app/components/layout/Sidebar';
@@ -126,7 +125,7 @@ interface DashboardLayoutProps {
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const pathname = usePathname();
-  const router = useRouter();
+  // ...existing code...
   const dispatch = useAppDispatch();
   
   // Get admin data from redux store
@@ -139,14 +138,18 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
   const handleLogout = async () => {
     try {
-      await dispatch(logoutAdmin());
+      // Show logout message
       const { showToast } = await import("@/app/redux/toastSlice");
-      dispatch(showToast({ message: "Logout successful!", type: "success" }));
-      router.push("/login");
+      dispatch(showToast({ message: "Logging out...", type: "success" }));
+      
+      // Use authService for proper logout
+      const { authService } = await import("@/app/utils/sessionManager");
+      authService.logout();
     } catch (error) {
       console.error('Logout failed:', error);
-      // Force logout even if API fails
-      router.push('/login');
+      // Force logout even if there's an error
+      const { authService } = await import("@/app/utils/sessionManager");
+      authService.logout();
     }
   };
 

@@ -51,7 +51,7 @@ export default function AdminProfilePage() {
   useEffect(() => {
     const { uuid } = getUserData();
     if (uuid) {
-      dispatch(fetchAdminProfile(uuid));
+      dispatch(fetchAdminProfile());
     }
   }, [dispatch]);
 
