@@ -12,15 +12,16 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
   // Get Redux token as fallback
   const reduxToken = useAppSelector((state) => state.admin.token);
 
+  // Initial validation effect - runs once on mount
   useEffect(() => {
-    const validateAuth = () => {
-      console.log("[ProtectedRoute] Validating authentication...");
+    const validateAuth = async () => {
+      console.log("[ProtectedRoute] Initial validation...");
+      
+      // Wait a brief moment for Redux hydration to complete
+      await new Promise(resolve => setTimeout(resolve, 100));
       
       // Primary check: use authService for comprehensive validation
       const authServiceValid = authService.isAuthenticated();
-      
-      // Fallback: check Redux token
-      const reduxValid = !!reduxToken;
       
       // Fallback: check localStorage directly (in case authService fails)
       let localValid = false;
@@ -40,14 +41,13 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
         }
       }
 
-      console.log("[ProtectedRoute] Auth checks:", {
+      console.log("[ProtectedRoute] Initial auth checks:", {
         authService: authServiceValid,
-        redux: reduxValid,
         localStorage: localValid,
       });
 
       // User is authenticated if any of the checks pass
-      const isAuth = authServiceValid || reduxValid || localValid;
+      const isAuth = authServiceValid || localValid;
       
       if (!isAuth) {
         console.log("[ProtectedRoute] User not authenticated, redirecting to login");
@@ -61,12 +61,47 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
     };
 
     validateAuth();
+  }, [router]);
 
-    // Set up periodic validation every 30 seconds
-    const interval = setInterval(validateAuth, 30000);
+  // Monitor Redux token changes
+  useEffect(() => {
+    if (isValidating) return; // Skip if still in initial validation
+    
+    console.log("[ProtectedRoute] Redux token changed:", { hasToken: !!reduxToken });
+    
+    // If Redux token becomes available and we're not authenticated, re-validate
+    if (reduxToken && !isAuthenticated) {
+      console.log("[ProtectedRoute] Redux token available, setting authenticated");
+      setIsAuthenticated(true);
+    }
+    // If Redux token is removed and we were authenticated, check other sources
+    else if (!reduxToken && isAuthenticated) {
+      const authServiceValid = authService.isAuthenticated();
+      if (!authServiceValid) {
+        console.log("[ProtectedRoute] No valid authentication found, redirecting to login");
+        setIsAuthenticated(false);
+        router.replace("/login");
+      }
+    }
+  }, [reduxToken, isAuthenticated, isValidating, router]);
+
+  // Periodic validation every 60 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (!isAuthenticated) return; // Skip if not authenticated
+      
+      console.log("[ProtectedRoute] Periodic validation...");
+      const authServiceValid = authService.isAuthenticated();
+      
+      if (!authServiceValid) {
+        console.log("[ProtectedRoute] Periodic check failed, redirecting to login");
+        setIsAuthenticated(false);
+        router.replace("/login");
+      }
+    }, 60000);
     
     return () => clearInterval(interval);
-  }, [router, reduxToken]);
+  }, [isAuthenticated, router]);
 
   // Show loading while validating
   if (isValidating) {

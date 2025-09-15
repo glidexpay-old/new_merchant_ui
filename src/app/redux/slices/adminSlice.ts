@@ -130,17 +130,26 @@ export const loginAdmin = createAsyncThunk<
           'Login failed';
         return rejectWithValue(errorMsg);
       }
-      const token = data.extraData?.loginData?.jwtToken;
-      if (token) {
-        localStorage.setItem(
-          'userData',
-          JSON.stringify({
-            token: data.extraData?.loginData?.jwtToken,
-            uuid: data.extraData.loginData.uuid,
-          })
-        );
+      const loginData = data.extraData?.loginData;
+      const token = loginData?.jwtToken;
+      if (token && loginData) {
+        // Store complete user data compatible with authService
+        const userData = {
+          token: loginData.jwtToken,
+          uuid: loginData.uuid,
+          merchantId: loginData.merchantId,
+          sessionExpiryDate: loginData.sessionExpiryDate,
+          sessionToken: loginData.sessionToken,
+          email: loginData.email,
+          phoneNumber: loginData.phoneNumber,
+          emailVerified: loginData.emailVerified,
+        };
+        localStorage.setItem('userData', JSON.stringify(userData));
+        
+        // Also store session expiry date for timer functionality
+        localStorage.setItem('sessionExpiryDate', loginData.sessionExpiryDate);
       }
-      return { user: { uuid: data.extraData.loginData.uuid }, token };
+      return { user: { uuid: loginData.uuid }, token };
     } catch (err) {
       const error = err as { response?: { data?: { msg?: string } }; message?: string };
       return rejectWithValue(error.response?.data?.msg || error.message || 'Login failed');
@@ -159,8 +168,9 @@ export const logoutAdmin = createAsyncThunk('admin/logout', async () => {
     const error = err as { response?: { data?: { msg?: string } }; message?: string };
     console.log('Logout failed:', error);
   }
-  // Always remove userData, even if API call fails
+  // Always remove all stored data, even if API call fails
   localStorage.removeItem('userData');
+  localStorage.removeItem('sessionExpiryDate');
   return true;
 });
 

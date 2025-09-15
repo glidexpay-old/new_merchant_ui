@@ -128,14 +128,28 @@ class AuthService {
    * Get user data from localStorage
    */
   getUserData(): UserData | null {
-    if (typeof window === 'undefined') return null;
+    if (typeof window === 'undefined') {
+      console.log('[AuthService] Window undefined, returning null');
+      return null;
+    }
     
     try {
-    const storedData: string | null = localStorage.getItem('userData');
-    // const userData: Record<string, unknown> = JSON.parse(localStorage.getItem("userData") || "{}");
-    return storedData ? JSON.parse(storedData) : null;
+      const storedData: string | null = localStorage.getItem('userData');
+      if (!storedData) {
+        console.log('[AuthService] No stored user data found');
+        return null;
+      }
+      
+      const userData = JSON.parse(storedData);
+      console.log('[AuthService] Retrieved user data:', { 
+        hasToken: !!userData.token, 
+        uuid: userData.uuid,
+        hasSessionExpiry: !!userData.sessionExpiryDate 
+      });
+      
+      return userData;
     } catch (error) {
-      console.error('Error parsing user data:', error);
+      console.error('[AuthService] Error parsing user data:', error);
       this.logout();
       return null;
     }
@@ -147,6 +161,7 @@ class AuthService {
   isAuthenticated(): boolean {
     const userData = this.getUserData();
     if (!userData || !userData.token) {
+      console.log('[AuthService] No user data or token found');
       return false;
     }
 
@@ -156,12 +171,15 @@ class AuthService {
       const currentTime = Date.now();
       
       if (currentTime >= expiryTime) {
-        console.log('Session expired, logging out...');
+        console.log('[AuthService] Session expired, logging out...');
         this.logout();
         return false;
       }
+      
+      console.log('[AuthService] Session valid, expires in:', Math.floor((expiryTime - currentTime) / 1000 / 60), 'minutes');
     }
 
+    console.log('[AuthService] User is authenticated');
     return true;
   }
 
